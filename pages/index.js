@@ -14,21 +14,46 @@ export default function Home() {
   const gender = 'masculino'
   const relationship = 'casado'
   const country = 'Brasil'
+  const token = 'd99e38846db8f4fe6844fdcdae807e'
 
-  const people = [
-    {id:'juunegreiros', title:'juunegreiros', url:'https://github.com/users/juunegreiros', image:'https://github.com/juunegreiros.png'},
-    {id:'omariosouto', title:'omariosouto', url:'https://github.com/users/omariosouto', image:'https://github.com/omariosouto.png'},
-    {id:'peas', title:'peas', url:'https://github.com/users/peas', image:'https://github.com/peas.png'},
-    {id:'robertaarcoverde', title:'robertaarcoverde', url:'https://github.com/users/robertaarcoverde', image:'https://github.com/robertaarcoverde.png'},
-    {id:'gabsferreira', title:'gabsferreira', url:'https://github.com/users/gabsferreira', image:'https://github.com/gabsferreira.png'}
-  ]
+  const [followers, setFollowers] = React.useState([])
+  React.useEffect(() => {
+    fetch(`https://api.github.com/users/${username}/followers`)
+    .then((_server) => {
+      return _server.json()
+    })
+    .then((re) => {
+      setFollowers(re)
+    })
+  }, [])
 
-  const [communities, setCommunities] = React.useState([{
-      id: 'xpto123',
-      title: 'Eu odeio acordar cedo',
-      url: 'https://alurakut.vercel.app/capa-comunidade-01.jpg',
-      image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg'
-  }])
+  const [communities, setCommunities] = React.useState([])
+  React.useEffect(() => {
+    fetch(`https://graphql.datocms.com/`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        query: `{ 
+          allCommunities {
+              id
+              title
+              imageUrl
+              url
+          }
+         }`
+      }),
+    })
+    .then((_server) => {
+      return _server.json()
+    })
+    .then((re) => setCommunities(re.data.allCommunities) )
+  }, [])
+
 
   return (
     <>
@@ -45,7 +70,34 @@ export default function Home() {
           </Box>
           <Box>
             <h2 className="subTitle">Crie sua comunidade!</h2>
-            <form id="createCommunity" onSubmit={(e) => {setCommunities( CreateCommunity( e, communities ) )} }>
+            <form id="createCommunity" onSubmit={
+              (evt) => {
+                evt.preventDefault();
+                const formData = new FormData(evt.target);
+                const newCommunity = {
+                    title: formData.get('title'),
+                    imageUrl: formData.get('image'),
+                    url: formData.get('url'),
+                    creatorSlug: formData.get('creator')
+                }
+
+                fetch('../api/communities', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newCommunity)
+                  })
+                  .then(async (response) => {
+                    const data = await response.json();
+                    const community = data.newEntry;
+                    console.log(community)
+                    evt.target.reset()
+                    setCommunities( [...communities, community] )
+                  })
+                // setCommunities( await CreateCommunity( e, communities ) ) // don't know why doesn't work :( 
+              } 
+            }>
               <div>
                 <label htmlFor="title">Nome</label>
                 <input placeholder="Nome" name="title" id="title" aria-label="Nome" type="text" />
@@ -58,6 +110,7 @@ export default function Home() {
                 <label htmlFor="url">URL da página</label>
                 <input placeholder="URL" name="url" id="url" aria-label="URL da página" type="text" />
               </div>
+              <input type="hidden" name="creator" value={username} />
               <button>Criar comunidade</button>
             </form>
           </Box>
@@ -65,10 +118,24 @@ export default function Home() {
         
         <div className="profileRelationsArea" style={{ gridArea: 'profileRelationsArea' }}>
           <ProfileRelationsBoxWrapper>
-            <RelationsBlockList title="Pessoas da comunidade" items={people} max="6" />
+            <RelationsBlockList  
+              title="Seguidores" 
+              items={followers}
+              idField="id" 
+              imageField="avatar_url" 
+              titleField="login" 
+              urlField ="html_url"
+              max="6" />
           </ProfileRelationsBoxWrapper>
           <ProfileRelationsBoxWrapper>
-            <RelationsBlockList title="Comunidades" items={communities} max="6" />
+            <RelationsBlockList 
+              title="Comunidades"
+              items={communities}
+              idField="id"
+              imageField="imageUrl"
+              titleField="title"
+              urlField="url"
+              max="6" />
           </ProfileRelationsBoxWrapper>
         </div>
         

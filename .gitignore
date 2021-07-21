@@ -25,8 +25,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env.local
-.env.development.local
+.env.local 
 .env.test.local
 .env.production.local
 
@@ -35,3 +34,8 @@ yarn-error.log*
 
 #study guide
 STUDYGUIDE.md
+
+#rest endpoints
+rest.http
+
+package-lock.json

@@ -5,14 +5,14 @@ function RelationsBlockList(props){
         props.items.length = props.max
     return (
         <>
-            <h2 className="smallTitle">{props.title} ({props.items.length})</h2>
+            <h2 className="smallTitle">{props['title']} ({props.items.length})</h2>
             <ul>
                 {props.items.map((itemAtual) => {
                 return (
-                    <li key={itemAtual.id}>
-                    <a href={itemAtual.url}>
-                        <img src={itemAtual.image} />
-                        <span>{itemAtual.title}</span>
+                    <li key={itemAtual[props.idField]}>
+                    <a href={itemAtual[props.urlField]}>
+                        <img src={itemAtual[props.imageField]} />
+                        <span>{itemAtual[props.titleField]}</span>
                     </a>
                     </li>
                 )
