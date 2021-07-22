@@ -38,4 +38,6 @@ STUDYGUIDE.md
 #rest endpoints
 rest.http
 
+# package manager
 package-lock.json
+yarn.lock

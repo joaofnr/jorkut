@@ -6,11 +6,11 @@ function ProfileSidebar(props){
         <Box as="aside">
             <img src={`https://github.com/${props.username}.png`} />
             <hr />
-            <p>{props.name}</p>
+            {/* <p>{props.name}</p>
             <p>{props.gender}</p>
             <p>{props.relationship}</p>
             <p>{props.country}</p>
-            <hr />
+            <hr /> */}
             <AlurakutProfileSidebarMenuDefault />
         </Box>
 
