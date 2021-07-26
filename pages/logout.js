@@ -1,4 +1,5 @@
 import React from 'react';
+import router, { useRouter } from 'next/router';
 import nookies from 'nookies';
 
 export default function LogoutScreen() {
@@ -15,8 +16,10 @@ export default function LogoutScreen() {
         </section>
 
         <section className="formArea">
-          <h2>Você foi desconectado.</h2>
-          <p><a href="/login">Voltar</a></p>
+          <div className="box">
+            <h2>Você foi desconectado.</h2>
+            <p><button onClick={() => {router.push('/login')}}>Voltar</button></p>
+          </div>
         </section>
 
         <footer className="footerArea">
